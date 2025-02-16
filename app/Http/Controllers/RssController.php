@@ -6,16 +6,24 @@ use Illuminate\Http\Request;
 use App\Models\FeedItem;
 use App\Services\RssService;
 use App\Services\GoogleAlertRssService;
+use App\Services\CrawlService;
 use function Laravel\Prompts\alert;
 
 class RssController extends Controller
 {
     protected $rssService;
     protected $GoogleAlertRssService;
-    public function __construct(RssService $rssService, GoogleAlertRssService $GoogleAlertRssService)
+
+    protected $CrawlService;
+    public function __construct(
+        RssService $rssService, 
+        GoogleAlertRssService $GoogleAlertRssService ,
+        CrawlService $CrawlService
+        )
     {
         $this->rssService = $rssService;
         $this->GoogleAlertRssService = $GoogleAlertRssService;
+        $this->CrawlService = $CrawlService;
     }
 
    
@@ -41,6 +49,16 @@ class RssController extends Controller
 
         foreach ($feeds_GAlert as $feed_GAlert) {
             $this->GoogleAlertRssService->fetchAndStore($feed_GAlert['url'], $feed_GAlert['tag']);
+        }
+
+        // 取得するRSSフィードのリスト
+        $feeds_Crawl = [
+            ['tag' => 'luup']
+
+        ];
+
+        foreach ($feeds_Crawl as $feed_Crawl) {
+            $this->CrawlService->fetchAndStore($feed_Crawl['tag']);
         }
 
 
