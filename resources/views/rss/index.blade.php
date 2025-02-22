@@ -1,5 +1,8 @@
+
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+   
     <head>
 
 
@@ -15,6 +18,7 @@
     
     </head>
     <body class="">
+        @extends('layouts.app')
         <div class="">
                     <header class="">
                         <div class="flex lg:justify-center lg:col-start-2">
@@ -66,24 +70,31 @@
                                     <a href="{{ route('rss.fetch') }}" class="">RSS更新</a>
 
                                     
+                                    <form action="{{ route('article.summarize') }}" method="POST">
+                                        @csrf
                                         @if (isset($feedItems) && $feedItems->count() > 0)
-                                            <div class="grid grid-cols-6 ">
+                                                                                    <button type="submit" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded">選択した記事を要約</button>
+                                            <div class="grid grid-cols-5">
+
                                                 @foreach ($feedItems as $item)
                                                     <div class="m-3">
-                                                        <p class="font-bold"> {{ $item->tag_name }}</p>
-                                                         <p class="">{{ \Carbon\Carbon::parse($item->article_date)->format('Y-m-d H:i') }}</p>
-                                                        <h5 class=""><a href="{{ $item->article_link }}" target="_blank" class="text-blue-600 hover:underline">{{ $item->article_title }}</a></h5>
-
-
+                                                        <input type="checkbox" name="articles[]"
+                                                            value="{{ json_encode(['id' => $item->id, 'title' => $item->article_title, 'link' => $item->article_link, 'image' => $item->article_image, 'date' => $item->article_date]) }}">
+                                                        <p class="font-bold">{{ $item->tag_name }}</p>
+                                                        <p>{{ \Carbon\Carbon::parse($item->article_date)->format('Y-m-d H:i') }}</p>
+                                                        <h5><a href="{{ $item->article_link }}" target="_blank"
+                                                                class="text-blue-600 hover:underline">{{ $item->article_title }}</a></h5>
                                                         @if($item->article_image)
                                                             <img src="{{ $item->article_image }}" alt="Image" class="img-fluid" style="max-width: 200px;">
                                                         @endif
                                                     </div>
                                                 @endforeach
                                             </div>
+
                                         @else
                                             <p>RSSフィードがありません。</p>
                                         @endif
+                                    </form>
                                    
 
                                     <div class="mt-3">
