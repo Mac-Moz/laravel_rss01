@@ -7,6 +7,7 @@ use App\Models\FeedItem;
 use App\Services\RssService;
 use App\Services\GoogleAlertRssService;
 use App\Services\CrawlService;
+// use App\Services\GoogleMailService;
 use function Laravel\Prompts\alert;
 
 class RssController extends Controller
@@ -18,12 +19,14 @@ class RssController extends Controller
     public function __construct(
         RssService $rssService, 
         GoogleAlertRssService $GoogleAlertRssService ,
-        CrawlService $CrawlService
+        CrawlService $CrawlService,
+        // GoogleMailService $GoogleMailService
         )
     {
         $this->rssService = $rssService;
         $this->GoogleAlertRssService = $GoogleAlertRssService;
         $this->CrawlService = $CrawlService;
+        // $this->GoogleMailService = $GoogleMailService;
     }
 
    
@@ -33,8 +36,8 @@ class RssController extends Controller
         // 取得するRSSフィードのリスト
         $feeds = [
             ['url' => 'https://www.fsa.go.jp/fsaNewsListAll_rss2.xml', 'tag' => '金融庁'],
-            ['url' => 'https://www.nhk.or.jp/rss/news/cat0.xml', 'tag' => 'NHK主要ニュース'],
-            ['url' => 'https://assets.wor.jp/rss/rdf/nikkei/news.rdf', 'tag' => '日経新聞'],
+            ['url' => 'https://note.com/yoruo_hanada/rss', 'tag' => '花田宏造税理士事務所'],
+            ['url' => 'https://note.com/kazuaki_mizuchi/rss', 'tag' => '水地一彰'],
         ];
 
         foreach ($feeds as $feed) {
@@ -43,7 +46,9 @@ class RssController extends Controller
 
         // 取得するRSSフィードのリスト
         $feeds_GAlert = [
-            ['url' => 'https://www.google.co.jp/alerts/feeds/04686804727264430900/18124849360240036542', 'tag' => 'えび']
+            ['url' => 'https://www.google.co.jp/alerts/feeds/04686804727264430900/9134664085846354044', 'tag' => '新規上場'],
+            ['url' => 'https://www.google.co.jp/alerts/feeds/04686804727264430900/4453997366422881941', 'tag' => 'サステナビリティ'],
+            ['url' => 'https://www.google.co.jp/alerts/feeds/04686804727264430900/8692913570947220025', 'tag' => '内部監査']
 
         ];
 
@@ -61,9 +66,12 @@ class RssController extends Controller
             $this->CrawlService->fetchAndStore($feed_Crawl['tag']);
         }
 
+        $feeds_Crawl = [
+            ['tag' => 'luup']
 
-        alert('RSSフィードを更新しました') ;
-        return redirect()->route('rss.index')->with('success', );
+        ];
+
+        
 
     }
     /**
@@ -71,7 +79,7 @@ class RssController extends Controller
      */
     public function index()
     {
-        $feedItems = FeedItem::orderBy('article_date', 'desc')->paginate(10);
+        $feedItems = FeedItem::orderBy('article_date', 'desc')->paginate(30);
         return view('rss.index', compact('feedItems'));
         //
     }
