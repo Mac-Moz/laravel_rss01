@@ -17,19 +17,18 @@ class RssController extends Controller
 
     protected $CrawlService;
     public function __construct(
-        RssService $rssService, 
-        GoogleAlertRssService $GoogleAlertRssService ,
+        RssService $rssService,
+        GoogleAlertRssService $GoogleAlertRssService,
         CrawlService $CrawlService,
         // GoogleMailService $GoogleMailService
-        )
-    {
+    ) {
         $this->rssService = $rssService;
         $this->GoogleAlertRssService = $GoogleAlertRssService;
         $this->CrawlService = $CrawlService;
         // $this->GoogleMailService = $GoogleMailService;
     }
 
-   
+
 
     public function fetch()
     {
@@ -66,21 +65,22 @@ class RssController extends Controller
             $this->CrawlService->fetchAndStore($feed_Crawl['tag']);
         }
 
-        $feeds_Crawl = [
-            ['tag' => 'luup']
-
-        ];
-
-        
-
     }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $feedItems = FeedItem::orderBy('article_date', 'desc')->paginate(30);
-        return view('rss.index', compact('feedItems'));
-        //
+        $tag = $request->query('tag');
+
+        // 全てのタグ一覧を取得
+        $tags = FeedItem::distinct()->pluck('tag_name');
+
+        // 選択されたタグの記事のみ取得
+        $feedItems = FeedItem::when($tag, function ($query, $tag) {
+            return $query->where('tag_name', $tag);
+        })->orderBy('article_date', 'desc')->paginate(50);
+
+        return view('rss.index', compact('feedItems', 'tags'));
     }
 }

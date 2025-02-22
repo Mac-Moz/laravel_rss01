@@ -5,7 +5,7 @@ use App\Http\Controllers\RssController;
 use App\Http\Controllers\ArticleController;
 
 Route::get('/', function () {
-    return view('rss.index');
+    return view('WELCOME');
 });
 
 Route::get('/rss/fetch', [RssController::class, 'fetch'])->name('rss.fetch');
