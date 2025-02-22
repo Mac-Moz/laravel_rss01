@@ -15,7 +15,7 @@ class GmailAuthenticate extends Command
      */
     protected $signature = 'app:gmail-authenticate';
 
-    /**
+    /***
      * The console command description.
      *
      * @var string
