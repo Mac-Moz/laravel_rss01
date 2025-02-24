@@ -36,7 +36,9 @@ class RssController extends Controller
         $feeds = [
             ['url' => 'https://www.fsa.go.jp/fsaNewsListAll_rss2.xml', 'tag' => '金融庁'],
             ['url' => 'https://note.com/yoruo_hanada/rss', 'tag' => '花田宏造税理士事務所'],
-            ['url' => 'https://note.com/kazuaki_mizuchi/rss', 'tag' => '水地一彰'],
+            ['url' => 'https://note.com/kazuaki_mizuchi/rss', 'tag' => 'note_水地一彰'],
+            ['url' => 'https://chatgpt-lab.com/rss', 'tag' => 'note_ChatGPT研究所']
+           
         ];
 
         foreach ($feeds as $feed) {
@@ -64,6 +66,8 @@ class RssController extends Controller
         foreach ($feeds_Crawl as $feed_Crawl) {
             $this->CrawlService->fetchAndStore($feed_Crawl['tag']);
         }
+
+        return redirect()->route('rss.index')->with('success', 'RSSフィードの更新が完了しました');
 
     }
     /**
