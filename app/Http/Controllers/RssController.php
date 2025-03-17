@@ -37,7 +37,10 @@ class RssController extends Controller
             ['url' => 'https://www.fsa.go.jp/fsaNewsListAll_rss2.xml', 'tag' => '金融庁'],
             ['url' => 'https://note.com/yoruo_hanada/rss', 'tag' => '花田宏造税理士事務所'],
             ['url' => 'https://note.com/kazuaki_mizuchi/rss', 'tag' => 'note_水地一彰'],
-            ['url' => 'https://chatgpt-lab.com/rss', 'tag' => 'note_ChatGPT研究所']
+            ['url' => 'https://chatgpt-lab.com/rss', 'tag' => 'note_ChatGPT研究所'],
+            ['url' => 'https://note.com/ndot_man/rss', 'tag' => 'note_N経営者のための生成AI']
+
+            
            
         ];
 

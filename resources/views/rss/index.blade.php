@@ -20,11 +20,22 @@
         @endauth
     </nav>
     @endif
-    <div>
+    <div class="flex items-center space-x-4">
         <a href="{{ route('rss.fetch') }}" class="bg-blue-500 text-white px-4 py-2 rounded">RSS更新</a>
-        <button type="button" id="header-summarize-btn" class="bg-green-500 text-white px-4 py-2 rounded">
-            選択した記事を要約
-        </button>
+
+        <!-- 期間指定用フォーム -->
+        <form id="summary-form" action="{{ route('article.summarizeByTerm') }}" method="POST" class="flex items-center space-x-2">
+            @csrf
+            <label for="start_date">開始日:</label>
+            <input type="date" id="start_date" name="start_date" class="border px-2 py-1 rounded">
+
+            <label for="end_date">終了日:</label>
+            <input type="date" id="end_date" name="end_date" class="border px-2 py-1 rounded">
+
+            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">
+                期間指定で要約
+            </button>
+        </form>
     </div>
 </header>
 
@@ -85,12 +96,4 @@
         </form>
     </main>
 </div>
-
-<!-- JavaScript でヘッダーのボタンが押されたらメインのボタンをクリック -->
-<script>
-    document.getElementById('header-summarize-btn').addEventListener('click', function() {
-        document.getElementById('main-summarize-btn').click();
-    });
-</script>
-
 @endsection
