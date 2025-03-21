@@ -72,15 +72,16 @@
                 <div class="border p-4 rounded shadow">
                     <label class="flex items-center space-x-2">
                         <input type="checkbox" name="articles[]"
-                            value="{{ json_encode(['id' => $item->id, 'title' => $item->article_title, 'link' => $item->article_link, 'image' => $item->article_image, 'date' => $item->article_date]) }}">
+                            value="{{ json_encode(['id' => $item->id, 'title' => $item->article_title, 'link' => $item->article_link, 'label_audit' => $item->label_audit,'image' => $item->article_image, 'date' => $item->article_date]) }}">
                         <span>選択</span>
                     </label>
 
                     <a href="{{ $item->article_link }}" target="_blank" class="text-blue-500 hover:text-blue-700 text-lg">
                         {{ $item->article_title }}
                     </a>
-                    <p class="text-gray-500">{{ $item->tag_name }}</p>
-                    <p class="text-sm">{{ \Carbon\Carbon::parse($item->article_date)->format('Y-m-d H:i') }}</p>
+                    <p class="text-gray-500">記事タグ：{{ $item->tag_name }}</p>
+                    <p class="text-gray-500">内部監査ラベル：{{ $item->label_audit }}</p>
+                    <p class="text-sm">日付：{{ \Carbon\Carbon::parse($item->article_date)->format('Y-m-d H:i') }}</p>
 
                     @if($item->article_image)
                     <img src="{{ $item->article_image }}" alt="Image" class="mt-2 w-full max-w-xs">
