@@ -23,6 +23,12 @@
     <div class="flex items-center space-x-4">
         <a href="{{ route('rss.fetch') }}" class="bg-blue-500 text-white px-4 py-2 rounded">RSS更新</a>
 
+        <!-- 🔍 追加：監査項目ページへのリンク -->
+        <a href="{{ route('audit_items.index') }}" class="bg-purple-500 text-white px-4 py-2 rounded">
+            監査項目一覧
+        </a>
+
+
         <!-- 期間指定用フォーム -->
         <form id="summary-form" action="{{ route('article.summarizeByTerm') }}" method="POST" class="flex items-center space-x-2">
             @csrf
