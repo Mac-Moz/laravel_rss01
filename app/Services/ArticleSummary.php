@@ -15,7 +15,7 @@ class ArticleSummary
 
     public function summarize($title, $url)
     {
-        $prompt = "以下のサイトから {$title} に関する内容の要約を作成してください。要約した記事のタイトル、記事内容のサマリ、記事のキーワードを記載してください: {$url}";
+        $prompt = "以下のサイトから {$title} に関する内容の要約を作成してください。要約は簡潔に3つ以内の箇条書きにしてください: {$url}";
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $this->apiKey,

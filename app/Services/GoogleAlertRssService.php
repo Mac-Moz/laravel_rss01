@@ -46,7 +46,8 @@ class GoogleAlertRssService
             foreach ($items as $item) {
                 Log::info("Processing Atom entry", ['item' => json_encode($item)]);
 
-                $title = isset($item->title) ? trim((string) $item->title) : 'タイトルなし';
+                // HTMLタグを削除する処理を追加
+                $title = isset($item->title) ? trim(strip_tags((string) $item->title)) : 'タイトルなし';
                 $link = isset($item->link['href']) ? trim((string) $item->link['href']) : 'リンクなし';
                 $date = isset($item->published) ? (string) $item->published : null;
                 $dateFormatted = $date ? date('Y-m-d H:i:s', strtotime($date)) : '1970-01-01 00:00:00';

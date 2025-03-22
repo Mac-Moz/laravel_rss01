@@ -56,7 +56,7 @@ class DatabaseTag
                 ['role' => 'system', 'content' => 'あなたは文章を分類するAIです。'],
                 ['role' => 'user', 'content' => $prompt],
             ],
-            'max_tokens' => 10,
+            'max_tokens' => 100,
             'temperature' => 0.2,
         ]);
 

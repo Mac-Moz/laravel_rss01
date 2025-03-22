@@ -25,7 +25,6 @@ class RssService
             $xmlString = $response->body();
             Log::info("Received XML Response (First 500 chars): " . substr($xmlString, 0, 500));
 
-            // XMLを安全に解析
             $xml = @simplexml_load_string($xmlString, "SimpleXMLElement", LIBXML_NOCDATA);
             if ($xml === false) {
                 Log::error("Failed to parse RSS XML", ['url' => $url]);
@@ -34,30 +33,25 @@ class RssService
 
             Log::info("XML parsed successfully");
 
-            // RSSバージョンの判定
             $namespaces = $xml->getNamespaces(true);
             $isRss1 = isset($namespaces['rdf']);
             $isRss2 = isset($xml->channel);
 
             if ($isRss1) {
-                // RSS 1.0 フィードの処理
                 $items = $xml->item;
             } elseif ($isRss2) {
-                // RSS 2.0 フィードの処理
                 $items = $xml->channel->item;
             } else {
                 Log::error("Unsupported RSS feed format", ['url' => $url]);
                 return;
             }
 
-            // RSS アイテムの処理
             foreach ($items as $item) {
                 Log::info("Processing RSS item", ['item' => json_encode($item)]);
 
                 $title = isset($item->title) ? trim((string) $item->title) : 'タイトルなし';
                 $link = isset($item->link) ? trim((string) $item->link) : 'リンクなし';
 
-                // RSS 1.0では、公開日は<dc:date>要素に格納されていることが多い
                 $date = null;
                 if ($isRss1 && isset($namespaces['dc'])) {
                     $dc = $item->children($namespaces['dc']);
@@ -67,27 +61,40 @@ class RssService
                 }
                 $dateFormatted = $date ? date('Y-m-d H:i:s', strtotime($date)) : null;
 
+                // ✅ イメージ取得拡張: media:thumbnail, enclosure, note:creatorImage に対応
                 $image = null;
                 if (isset($item->enclosure) && isset($item->enclosure['url'])) {
                     $image = (string) $item->enclosure['url'];
                 }
 
-                // データの確認ログ
+                if (empty($image) && isset($namespaces['media'])) {
+                    $media = $item->children($namespaces['media']);
+                    if (isset($media->thumbnail) && isset($media->thumbnail['url'])) {
+                        $image = (string) $media->thumbnail['url'];
+                    } elseif (isset($media->thumbnail)) {
+                        $image = (string) $media->thumbnail;
+                    }
+                }
+
+                if (empty($image) && isset($namespaces['note'])) {
+                    $note = $item->children($namespaces['note']);
+                    if (isset($note->creatorImage)) {
+                        $image = (string) $note->creatorImage;
+                    }
+                }
+
                 Log::debug("Extracted Data", compact('title', 'link', 'dateFormatted', 'image'));
 
-                // 必須データのチェック
                 if (empty($title) || empty($link)) {
                     Log::warning("Skipping item due to missing title or link", compact('title', 'link'));
                     continue;
                 }
 
-                // 重複チェック
                 if (FeedItem::where('article_link', $link)->exists()) {
                     Log::info("Skipping duplicate item: " . $title);
-                    continue; // 重複が見つかったら次のアイテムへ
+                    continue;
                 }
 
-                // 保存前のデータをログに記録
                 $data = [
                     'tag_name' => $tagName,
                     'article_title' => $title ?? 'タイトルなし',
@@ -97,7 +104,6 @@ class RssService
                 ];
                 Log::debug("Saving data to database", $data);
 
-                // データベース登録
                 try {
                     $feedItem = FeedItem::create($data);
 
@@ -115,7 +121,6 @@ class RssService
             }
 
             Log::info("RSS feed processing completed successfully");
-
         } catch (Exception $e) {
             Log::error("Error while fetching and processing RSS: " . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()

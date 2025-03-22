@@ -4,15 +4,15 @@
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 <div class="container mx-auto px-4 py-6" x-data="{ activeModal: null, modalContent: '' }">
-    <h1 class="text-2xl font-bold mb-6">監査項目一覧</h1>
+    <h1 class="text-m font-bold text-gray-400 mb-6">Audit Checklist</h1>
 
     @if(session('success'))
     <div class="text-green-600 mb-4">{{ session('success') }}</div>
     @endif
 
     <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-300 text-sm">
-            <thead class="bg-gray-100 text-left">
+        <table class="min-w-full bg-white border text-gray-400 border-gray-300 text-sm">
+            <thead class="bg-gray-100 text-left text-gray-500">
                 <tr>
                     <th class="px-4 py-2 border">ID</th>
                     <th class="px-4 py-2 border">監査項目</th>
@@ -55,8 +55,10 @@
                                 @click="modalContent = `{{ $item->reference_info }}`; activeModal = 'modal'">{{ $item->reference_info }}</textarea>
                         </td>
                         <td class="px-2 py-2 border space-y-1 w-36">
-                            <button type="submit" class="bg-blue-600 text-white px-2 py-1 rounded w-full hover:bg-blue-700">保存</button>
-                            <a href="{{ route('audit_items.index') }}" class="block text-center text-gray-600 hover:underline">キャンセル</a>
+                            <button type="submit" class="bg-blue-400 text-white px-2 py-1 rounded w-full hover:bg-green-600">保存</button>
+                            <button type="submit" class="bg-blue-400 text-white px-2 py-1 rounded w-full hover:bg-green-600">
+                                <a href="{{ route('audit_items.index') }}" >キャンセル</a>
+                            </button>
                         </td>
                     </form>
                     @else
@@ -80,11 +82,14 @@
                         @endif
                     </td>
                     <td class="px-2 py-2 border space-y-1 w-36">
-                        <a href="{{ route('audit_items.index', ['edit' => $item->id]) }}" class="text-blue-600 hover:underline block">編集</a>
+                        <button type="submit" class="bg-blue-400 text-white px-2 py-1 rounded w-full hover:bg-green-600">
+
+                            <a href="{{ route('audit_items.index', ['edit' => $item->id]) }}">編集</a>
+                        </button>
                         <form action="{{ route('audit_items.regenerate', $item->id) }}" method="POST">
                             @csrf
-                            <button type="submit" class="bg-purple-600 text-white px-2 py-1 rounded w-full hover:bg-purple-700">
-                                AI再生成
+                            <button type="submit" class="bg-blue-400 text-white px-2 py-1 rounded w-full hover:bg-green-600">
+                                サマリ更新
                             </button>
                         </form>
                     </td>
@@ -102,7 +107,7 @@
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
         @keydown.escape.window="activeModal = null"
         @click.outside="activeModal = null">
-        <div class="bg-white p-6 rounded shadow-lg max-w-2xl w-full relative">
+        <div class="bg-white text-gray-700 p-6 rounded-2xl shadow-lg max-w-2xl w-full relative">
             <h3 class="text-lg font-bold mb-2">全文表示</h3>
             <div class="text-sm whitespace-pre-wrap overflow-y-auto max-h-[60vh]">
                 <p x-text="modalContent"></p>
