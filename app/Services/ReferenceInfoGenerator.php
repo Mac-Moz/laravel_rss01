@@ -33,7 +33,7 @@ class ReferenceInfoGenerator
         $client = OpenAI::client(config('services.openai.key'));
 
         $response = $client->chat()->create([
-            'model' => 'gpt-4-turbo',
+            'model' => 'gpt-3.5-turbo',
             'messages' => [
                 ['role' => 'system', 'content' => 'あなたは企業の内部監査を支援するAIです。与えられた監査項目に関連する情報があれば要約し、なければ「該当なし」と答えてください。'],
                 ['role' => 'user', 'content' => $prompt],
