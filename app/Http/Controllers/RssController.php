@@ -8,6 +8,7 @@ use App\Services\RssService;
 use App\Services\GoogleAlertRssService;
 use App\Services\CrawlService;
 use App\Services\DatabaseTag;
+use App\Services\ArticleSummary; // 追加
 
 class RssController extends Controller
 {
@@ -15,17 +16,20 @@ class RssController extends Controller
     protected $GoogleAlertRssService;
     protected $CrawlService;
     protected $databaseTag;
+    protected $articleSummary; // 追加
 
     public function __construct(
         RssService $rssService,
         GoogleAlertRssService $GoogleAlertRssService,
         CrawlService $CrawlService,
-        DatabaseTag $databaseTag
+        DatabaseTag $databaseTag,
+        ArticleSummary $articleSummary // 追加
     ) {
         $this->rssService = $rssService;
         $this->GoogleAlertRssService = $GoogleAlertRssService;
         $this->CrawlService = $CrawlService;
         $this->databaseTag = $databaseTag;
+        $this->articleSummary = $articleSummary; // 追加
     }
 
     public function fetch()
@@ -62,9 +66,30 @@ class RssController extends Controller
             $this->CrawlService->fetchAndStore($feed_Crawl['tag']);
         }
 
+        // 既存のDatabaseTagサービスによる処理
         $this->databaseTag->classifyAndStoreLabels();
 
+        // 新規追加：記事要約処理
+        $this->summarizeArticles();
+
         return redirect()->route('rss.index')->with('success', 'RSSフィードの更新が完了しました');
+    }
+
+    /**
+     * 未要約の記事を取得し、要約を追加する処理
+     */
+    protected function summarizeArticles()
+    {
+        $unSummarizedItems = FeedItem::whereNull('article_summary')->get();
+
+        foreach ($unSummarizedItems as $item) {
+            $summary = $this->articleSummary->summarize($item->article_title, $item->article_link);
+
+            if ($summary) {
+                $item->article_summary = $summary;
+                $item->save();
+            }
+        }
     }
 
     /**
@@ -90,16 +115,12 @@ class RssController extends Controller
         $tags = FeedItem::distinct()->pluck('tag_name')->filter()->unique();
         $labels = FeedItem::distinct()->pluck('label_audit')->filter()->unique();
 
-        // ランダム画像取得処理を追加
         $imagesPath = public_path('images');
         $images = glob($imagesPath . '/*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
 
-        if (!empty($images)) {
-            $randomImage = basename($images[array_rand($images)]);
-        } else {
-            $randomImage = 'AuditMate01.png'; // 念のためデフォルト画像を指定
-        }
-
+        $randomImage = !empty($images)
+            ? basename($images[array_rand($images)])
+            : 'AuditMate01.png';
 
         return view('rss.index', compact('feedItems', 'tags', 'labels', 'randomImage'));
     }
