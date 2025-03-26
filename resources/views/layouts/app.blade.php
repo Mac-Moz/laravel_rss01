@@ -44,6 +44,13 @@
 
                 </a>
 
+                <!-- 監査項目一覧 -->
+                <a href="{{ route('feed_urls.index') }}"
+                    class="bg-blue-400 hover:bg-green-600 text-white px-3 py-1 rounded shadow text-sm">
+                    Souce編集
+
+                </a>
+
                 <!-- 擬似ログイン表示 -->
                 <span class="text-gray-700 text-sm ml-2">ようこそ、ゲストさん</span>
             </div>

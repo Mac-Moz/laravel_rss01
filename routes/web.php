@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RssController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuditItemController;
+use App\Http\Controllers\FeedUrlController;
 
 // トップページ → RSS 一覧
 Route::get('/', [RssController::class, 'index'])->name('rss.index');
@@ -21,3 +22,7 @@ Route::get('/audit-items', [AuditItemController::class, 'index'])->name('audit_i
 Route::get('/audit-items/{id}/edit', [AuditItemController::class, 'edit'])->name('audit_items.edit');
 Route::post('/audit-items/{id}', [AuditItemController::class, 'update'])->name('audit_items.update');
 Route::post('/audit-items/{id}/regenerate', [AuditItemController::class, 'regenerate'])->name('audit_items.regenerate');
+
+
+// 🔍 追加：FeedUrl 関連ルート（一覧・新規作成・編集・更新・削除）
+Route::resource('feed_urls', FeedUrlController::class);
